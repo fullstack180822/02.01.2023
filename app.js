@@ -5,6 +5,15 @@ const path = require('path')
 const url = require('url')
 const cors = require('cors')
 const { response } = require('express')
+const knex = require('knex')
+
+const connectedKnex = knex({
+    client: 'sqlite3',
+    connection: {
+        filename: "db/db_rest.db"
+    }
+})
+
 
 const port = 8080;
 
@@ -62,56 +71,86 @@ app.get('/add', (req, resp) => {
 //  8 SMART GET query params
 // GRAPH-QL
 // get all
-app.get('/posts', (req, resp) => {
-    resp.sendFile(path.join(__dirname, 'posts.json'))
+app.get('/employee', async (req, resp) => {
+    try {
+        const employees = await connectedKnex('COMPANY').select('*');
+        resp.status(200).json({ employees })
+    }
+    catch (err) {
+        resp.status(500).json({ "error": err.message })
+    }
 })
 // get end point by id
-app.get('/posts/:id', (req, resp) => {
-    resp.end(`
-    {
-        "userId": ${req.params.id},
-        "id": ${req.params.id},
-        "title": "sunt aut facere repellat provident occaecati excepturi optio reprehenderit",
-        "body": "quia et suscipit"
-      }`)
+app.get('/employee/:id', async (req, resp) => {
+    try {
+        const employees = await connectedKnex('COMPANY').select('*').where('id', req.params.id).first()
+        resp.status(200).json(employees)
+    }
+    catch (err) {
+        resp.status(500).json({ "error": err.message })
+    }
 })
-// ADD
-app.post('/posts', (req, resp) => {
-    console.log(req.body);
-    const { body } = req
-    //if (body.hasOwnProperty('userId') && body.hasOwnProperty('id')  -- no need, auto generate
-    if (body.hasOwnProperty('title') && body.hasOwnProperty('body')) {
-        // actually add ... later
 
-        // response
-        resp.writeHead(201)
-        resp.end('Successfully added')
+function is_valid_employee(obj) {
+    return obj.hasOwnProperty('NAME') && obj.hasOwnProperty('AGE') && 
+        obj.hasOwnProperty('ADDRESS') && obj.hasOwnProperty('SALARY') 
+}
+
+// ADD
+app.post('/employee', async (req, resp) => {
+    console.log(req.body);
+    const employee = req.body
+    try {
+        if (! is_valid_employee (employee)) {
+            resp.status(400).json({ error: 'values of employee are not llegal'})
+            return
+        }
+        const result = await connectedKnex('COMPANY').insert(employee)
+        resp.status(201).json({
+             new_employee : { ...employee, ID: result[0] },
+             url: `http://localhost:8080/employee/${result}` 
+            })
     }
-    else {
-        resp.writeHead(400)
-        resp.end('json object does not contains required field')
+    catch (err) {
+        resp.status(500).json({ "error": err.message })
     }
 })
+
 // PUT -- UPDATE/replace (or insert)
-app.put('/posts/:id', (req, resp) => {
+app.put('/employee/:id', async (req, resp) => {
     console.log(req.body);
-    console.log(req.params.id);
-    const { body } = req
-    // actually update ... later
-    // response
-    resp.writeHead(200)
-    resp.end('Successfully updated')
+    const employee = req.body
+    try {
+        if (! is_valid_employee (employee)) {
+            resp.status(400).json({ error: 'values of employee are not llegal'})
+            return
+        }
+        const result = await connectedKnex('COMPANY').where('id', req.params.id).update(employee)
+        resp.status(200).json({
+             status: 'updated',
+             'how many rows updated': result
+            })
+    }
+    catch (err) {
+        resp.status(500).json({ "error": err.message })
+    }
 })
 // DELETE 
-app.delete('/posts/:id', (req, resp) => {
-    console.log(req.params.id);
-    // actually delete ... later
-    // response
-    resp.writeHead(200)
-    resp.end('Successfully deleted')
+app.delete('/employee/:id', async (req, resp) => {
+    try {
+        const result = await connectedKnex('COMPANY').where('id', req.params.id).del()
+        resp.status(200).json({
+            status: 'success',
+            "how many deleted": result
+        })
+    }
+    catch (err) {
+        resp.status(500).json({ "error": err.message })
+    }
+
 })
 // PATCH -- UPDATE 
-app.patch('/posts/:id', (req, resp) => {
+app.patch('/employee/:id', (req, resp) => {
     console.log(req.params.id);
     // actually delete ... later
     // response

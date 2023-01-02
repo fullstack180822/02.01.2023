@@ -7,12 +7,59 @@
 
 <body>
     <h1>HELLO EXPRESS!!</h1>
-    <button onclick="run_me()">FIRE AJAX</button>
+    <button onclick="run_me()">FIRE AJAX GET ALL</button>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>NAME</th>
+                <th>AGE</th>
+                <th>ADDRESS</th>
+                <th>SALARY</th>
+            </tr>
+        </thead>
+        <tbody id="data">
+
+        </tbody>
+    </table>
+    <hr />
+    <p>NAME : <input type="text" id="txt_name"></p>
+    <p>AGE : <input type="number" id="txt_age"></p>
+    <p>ADDRESS : <input type="text" id="txt_address"></p>
+    <p>SALARY : <input type="number" id="txt_salary"></p>
+    <p><button onclick="fire_add()">INSERT</button></p>
     <script>
         function run_me() {
-            fetch('/posts/1').then(response => response.json()).
-                then(json => document.write(JSON.stringify(json)))
+            fetch('/employee').then(response => response.json()).
+                then(json => {
+                    console.log(json.employees);
+                    var tb = ""
+                    json.employees.forEach(e => {
+                        tb += `<tr><td>${e.ID}</td>
+                        <td>${e.NAME}</td>
+                        <td>${e.AGE}</td>
+                        <td>${e.ADDRESS}</td>
+                        <td>${e.SALARY}</td></tr>`
+                    });
+                    document.getElementById('data').innerHTML = tb
+                })
         }
+
+        function fire_add() {
+            fetch('/employee', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-type': 'application/json',
+                },
+                // take from inputs 
+                body: JSON.stringify({
+                    NAME: "",
+                    AGE: 0,
+                    ADDRESS: "",
+                    SALARY: 0
+                }).then()
+            }
     </script>
 </body>
 
