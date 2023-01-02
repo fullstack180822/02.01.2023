@@ -6,7 +6,7 @@
 </head>
 
 <body>
-    <h1>HELLO EXPRESS!!</h1>
+    <h1>GET</h1>
     <button onclick="run_me()">FIRE AJAX GET ALL</button>
     <table border="1">
         <thead>
@@ -23,11 +23,22 @@
         </tbody>
     </table>
     <hr />
+    <h1>INSERT</h1>
     <p>NAME : <input type="text" id="txt_name"></p>
     <p>AGE : <input type="number" id="txt_age"></p>
     <p>ADDRESS : <input type="text" id="txt_address"></p>
     <p>SALARY : <input type="number" id="txt_salary"></p>
     <p><button onclick="fire_add()">INSERT</button></p>
+    <h1>UPDATE</h1>
+    <p>ID : <input type="number" id="txt_name"></p>
+    <p>NAME : <input type="text" id="txt_name"></p>
+    <p>AGE : <input type="number" id="txt_age"></p>
+    <p>ADDRESS : <input type="text" id="txt_address"></p>
+    <p>SALARY : <input type="number" id="txt_salary"></p>
+    <p><button onclick="fire_update()">UPDATED</button></p>
+    <h1>DELETE</h1>
+    <p>ID : <input type="number" id="txt_name"></p>    
+    <p><button onclick="fire_delete()">DELETE</button></p>
     <script>
         function run_me() {
             fetch('/employee').then(response => response.json()).
@@ -46,20 +57,28 @@
         }
 
         function fire_add() {
-            fetch('/employee', {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-type': 'application/json',
-                },
-                // take from inputs 
-                body: JSON.stringify({
-                    NAME: "",
-                    AGE: 0,
-                    ADDRESS: "",
-                    SALARY: 0
-                }).then()
+            // demo code
+            // fetch('/employee', {
+            //     method: 'POST',
+            //     headers: {
+            //         'Accept': 'application/json',
+            //         'Content-type': 'application/json',
+            //     },
+            //     // take from inputs 
+            //     body: JSON.stringify({
+            //         NAME: "",
+            //         AGE: 0,
+            //         ADDRESS: "",
+            //         SALARY: 0
+            //     }).then()
+            // })
             }
+            function fire_update() {
+
+            }
+            function fire_delete() {
+                
+            }            
     </script>
 </body>
 
