@@ -145,6 +145,72 @@ app.get('/addbody', (req, resp) => {
     //resp.end(`${JSON.stringify(req.query.x)}`)
 })
 
+
+// ========================================== REST
+// REST BASIC:
+// 1.GET 2. GET by ID 3.POST (one-item) 4.PUT (update/replace/insert) 5.DELETE 6.PATCH (update only)
+// EXTRA ==>
+//  7.POST-MANY (json array)
+//  8 SMART GET query params
+// GRAPH-QL
+// get all
+app.get('/posts', (req, resp) => {
+    resp.sendFile(path.join(__dirname, 'posts.json'))
+})
+// get end point by id
+app.get('/posts/:id', (req, resp) => {
+    resp.end(`
+    {
+        "userId": ${req.params.id},
+        "id": ${req.params.id},
+        "title": "sunt aut facere repellat provident occaecati excepturi optio reprehenderit",
+        "body": "quia et suscipit"
+      }`)
+})
+// ADD
+app.post('/posts', (req, resp) => {
+    console.log(req.body);
+    const { body } = req
+    //if (body.hasOwnProperty('userId') && body.hasOwnProperty('id')  -- no need, auto generate
+    if (body.hasOwnProperty('title') && body.hasOwnProperty('body')) {
+        // actually add ... later
+
+        // response
+        resp.writeHead(201)
+        resp.end('Successfully added')
+    }
+    else {
+        resp.writeHead(400)
+        resp.end('json object does not contains required field')
+    }
+})
+// PUT -- UPDATE/replace (or insert)
+app.put('/posts/:id', (req, resp) => {
+    console.log(req.body);
+    console.log(req.params.id);
+    const { body } = req
+    // actually update ... later
+    // response
+    resp.writeHead(200)
+    resp.end('Successfully updated')
+})
+// DELETE 
+app.delete('/posts/:id', (req, resp) => {
+    console.log(req.params.id);
+    // actually delete ... later
+    // response
+    resp.writeHead(200)
+    resp.end('Successfully deleted')
+})
+// PATCH -- UPDATE 
+app.patch('/posts/:id', (req, resp) => {
+    console.log(req.params.id);
+    // actually delete ... later
+    // response
+    resp.writeHead(200)
+    resp.end('Successfully updated patched')
+})
+
 app.listen(port, () => {
     console.log(`Listening to port ${port}`);
 })
